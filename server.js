@@ -94,10 +94,13 @@ app.post('/v1/chat/completions', async (req, res) => {
     
     // Transform OpenAI request to NIM format
     const nimRequest = {
-      model: nimModel,
-      messages: messages,
-      temperature: temperature || 0.6,
-      max_tokens: max_tokens || 32000,
+    model: nimModel,
+     messages: enhancedMessages,
+    temperature: temperature || 0.8,
+    max_tokens: Math.max(max_tokens || 32000, 32000), // Force minimum 4096 tokens
+      top_p: 0.95,
+      frequency_penalty: 0.0,
+      presence_penalty: 0.6,
       extra_body: ENABLE_THINKING_MODE ? { chat_template_kwargs: { thinking: true } } : undefined,
       stream: stream || false
     };

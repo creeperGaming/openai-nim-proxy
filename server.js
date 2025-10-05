@@ -91,22 +91,37 @@ app.post('/v1/chat/completions', async (req, res) => {
         }
       }
     }
-    // Inject instruction for longer responses in roleplay
+  // Inject strong instruction for novel-length responses
     const enhancedMessages = [...messages];
+    const novelInstruction = `You are an expert creative writer specializing in immersive, novel-style roleplay. 
+
+CRITICAL WRITING REQUIREMENTS:
+- Write LONG, novel-style responses of 500-800 words minimum (6-10 paragraphs)
+- Use rich, descriptive prose with vivid sensory details
+- Include extensive character thoughts, internal monologue, and emotions
+- Describe actions, body language, and facial expressions in detail
+- Paint the environment and atmosphere thoroughly
+- Use varied sentence structure and literary techniques
+- Show don't tell - use descriptive language instead of stating facts
+- Never write short, brief, or rushed responses
+- Each response should feel like a page from a novel
+
+Write as if crafting a published novel, not a chat message.`;
+
     if (enhancedMessages.length > 0 && enhancedMessages[0].role === 'system') {
-      enhancedMessages[0].content += '\n\nIMPORTANT: Always provide detailed, descriptive responses of at least 3-4 paragraphs. Include character thoughts, actions, dialogue, and environmental details. Never give brief or short replies.';
+      enhancedMessages[0].content = novelInstruction + '\n\n' + enhancedMessages[0].content;
     } else {
       enhancedMessages.unshift({
         role: 'system',
-        content: 'You are a creative roleplay assistant. Always provide detailed, descriptive responses of at least 3-4 paragraphs. Include character thoughts, actions, dialogue, and environmental details. Never give brief or short replies.'
+        content: novelInstruction
       });
-    }
+      
     // Transform OpenAI request to NIM format
     const nimRequest = {
     model: nimModel,
      messages: enhancedMessages,
     temperature: temperature || 0.8,
-    max_tokens: Math.max(max_tokens || 32000, 32000), // Force minimum 4096 tokens
+    max_tokens: Math.max(max_tokens || 8192, 8192), // Force minimum 4096 tokens
       top_p: 0.95,
       frequency_penalty: 0.0,
       presence_penalty: 0.6,

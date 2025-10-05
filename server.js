@@ -91,7 +91,16 @@ app.post('/v1/chat/completions', async (req, res) => {
         }
       }
     }
-    
+    // Inject instruction for longer responses in roleplay
+    const enhancedMessages = [...messages];
+    if (enhancedMessages.length > 0 && enhancedMessages[0].role === 'system') {
+      enhancedMessages[0].content += '\n\nIMPORTANT: Always provide detailed, descriptive responses of at least 3-4 paragraphs. Include character thoughts, actions, dialogue, and environmental details. Never give brief or short replies.';
+    } else {
+      enhancedMessages.unshift({
+        role: 'system',
+        content: 'You are a creative roleplay assistant. Always provide detailed, descriptive responses of at least 3-4 paragraphs. Include character thoughts, actions, dialogue, and environmental details. Never give brief or short replies.'
+      });
+    }
     // Transform OpenAI request to NIM format
     const nimRequest = {
     model: nimModel,

@@ -69,7 +69,7 @@ app.post('/v1/chat/completions', async (req, res) => {
         await axios.post(`${NIM_API_BASE}/chat/completions`, {
           model: model,
           messages: [{ role: 'user', content: 'test' }],
-          max_tokens: 1
+          max_tokens: 32000
         }, {
           headers: { 'Authorization': `Bearer ${NIM_API_KEY}`, 'Content-Type': 'application/json' },
           validateStatus: (status) => status < 500
@@ -97,7 +97,7 @@ app.post('/v1/chat/completions', async (req, res) => {
       model: nimModel,
       messages: messages,
       temperature: temperature || 0.6,
-      max_tokens: max_tokens || 9024,
+      max_tokens: max_tokens || 32000,
       extra_body: ENABLE_THINKING_MODE ? { chat_template_kwargs: { thinking: true } } : undefined,
       stream: stream || false
     };
